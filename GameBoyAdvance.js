@@ -1101,17 +1101,33 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
     }
 
     var size = Module._retro_serialize_size()
+    if (size <= 0) {
+      return
+    }
+
     var buf = Module._malloc(size)
-    Module._retro_serialize(buf, size)
+    var ok = Module._retro_serialize(buf, size)
+    if (!ok) {
+      Module._free(buf)
+      return
+    }
+
     var copy = new Uint8Array(Module.HEAPU8.subarray(buf, buf + size))
+    Module._free(buf)
+
     var blob = new Blob([copy], { type: "application/octet-stream" })
+    var url = URL.createObjectURL(blob)
     var a = document.createElement("a")
-    a.href = URL.createObjectURL(blob)
+    a.href = url
     a.download =
       globals.window["GAMEBOYADVANCE_GAME_NAME"].replace(/\.\w+$/, "") + ".state"
+
+    // the anchor must be in the DOM for the click to start the download.
+    // on ios safari a click on a detached anchor is ignored.
+    document.body.appendChild(a)
     a.click()
-    URL.revokeObjectURL(a.href)
-    Module._free(buf)
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   globals.window["downloadStateGameBoyAdvance"] = downloadStateGameBoyAdvance
