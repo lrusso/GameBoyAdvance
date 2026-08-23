@@ -535,11 +535,25 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
       })
 
       window.addEventListener("focus", function () {
+        if (!globals.window["GAMEBOYADVANCE_RUNNING"]) {
+          return
+        }
+
+        // Not gated on the pause flag alone: ios can fire a spurious focus
+        // that clears it while the emulator is still in the background, so a
+        // dead loop also counts as needing a resume.
         if (
-          !globals.window["GAMEBOYADVANCE_RUNNING"] ||
-          !globals.window["GAMEBOYADVANCE_PAUSED"]
+          !globals.window["GAMEBOYADVANCE_PAUSED"] &&
+          globals.window["GAMEBOYADVANCE_RAF_ID"]
         ) {
           return
+        }
+
+        // cancel first so a stale id can never leave two loops running the
+        // core at double speed.
+        if (globals.window["GAMEBOYADVANCE_RAF_ID"]) {
+          cancelAnimationFrame(globals.window["GAMEBOYADVANCE_RAF_ID"])
+          globals.window["GAMEBOYADVANCE_RAF_ID"] = null
         }
 
         globals.window["GAMEBOYADVANCE_PAUSED"] = false
