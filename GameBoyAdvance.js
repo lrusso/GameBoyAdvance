@@ -1188,8 +1188,15 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
             var data = new Uint8Array(e.target.result)
             var buf = Module._malloc(data.length)
             Module.writeArrayToMemory(data, buf)
-            Module._retro_unserialize(buf, data.length)
+            var ok = Module._retro_unserialize(buf, data.length)
             Module._free(buf)
+
+            // the core rejected the state: leave the emulator untouched
+            // rather than resetting audio for a load that never happened.
+            if (!ok) {
+              return
+            }
+
             globals.window["GAMEBOYADVANCE_FRAME_AUDIO_L"].length = 0
             globals.window["GAMEBOYADVANCE_FRAME_AUDIO_R"].length = 0
             globals.window["GAMEBOYADVANCE_NEXT_AUDIO_TIME"] = 0
