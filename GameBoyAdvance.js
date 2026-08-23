@@ -308,9 +308,17 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
     if (elapsed < globals.window["GAMEBOYADVANCE_FRAME_INTERVAL"] - 1) {
       return
     }
-    globals.window["GAMEBOYADVANCE_LAST_FRAME_TIME"] =
-      globals.window["GAMEBOYADVANCE_LAST_FRAME_TIME"] +
-      globals.window["GAMEBOYADVANCE_FRAME_INTERVAL"]
+    // after a stall (file picker, app switch, gc pause) the accumulated debt
+    // would be repaid one frame per rAF callback, which is double speed on a
+    // 120hz display. drop it when more than 3 frames of debt would be
+    // left after this one, matching the cap MAME already uses.
+    if (elapsed - globals.window["GAMEBOYADVANCE_FRAME_INTERVAL"] > globals.window["GAMEBOYADVANCE_FRAME_INTERVAL"] * 3) {
+      globals.window["GAMEBOYADVANCE_LAST_FRAME_TIME"] = timestamp
+    } else {
+      globals.window["GAMEBOYADVANCE_LAST_FRAME_TIME"] =
+        globals.window["GAMEBOYADVANCE_LAST_FRAME_TIME"] +
+        globals.window["GAMEBOYADVANCE_FRAME_INTERVAL"]
+    }
 
     Module._retro_run()
     flushAudio()
