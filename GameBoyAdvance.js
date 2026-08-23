@@ -44,6 +44,7 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
   globals.window["GAMEBOYADVANCE_JOYSTICK"] = null
   globals.window["GAMEBOYADVANCE_LAST_MOUSE_X"] = null
   globals.window["GAMEBOYADVANCE_LAST_MOUSE_Y"] = null
+  globals.window["GAMEBOYADVANCE_STATE_INPUT"] = null
   globals.window["GAMEBOYADVANCE_BACK_TEXT"] = "BACK"
   globals.window["GAMEBOYADVANCE_SOUND_TEXT"] = "SOUND"
   globals.window["GAMEBOYADVANCE_LOAD_TEXT"] = "LOAD"
@@ -1121,9 +1122,29 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
         return
       }
 
+      // drop the input used by the previous call, if the picker was cancelled
+      // it is still hanging around in the DOM.
+      if (
+        globals.window["GAMEBOYADVANCE_STATE_INPUT"] &&
+        globals.window["GAMEBOYADVANCE_STATE_INPUT"].parentNode
+      ) {
+        globals.window["GAMEBOYADVANCE_STATE_INPUT"].parentNode.removeChild(
+          globals.window["GAMEBOYADVANCE_STATE_INPUT"]
+        )
+      }
+      globals.window["GAMEBOYADVANCE_STATE_INPUT"] = null
+
       var input = globals.document.createElement("input")
       input.type = "file"
       input.accept = ".state"
+      input.style.display = "none"
+
+      // the input must stay in the DOM while the native file picker is open.
+      // on ios safari a detached input (and its change listener) can be
+      // garbage collected while the page sits in the background behind the
+      // picker, and then the change event never fires.
+      document.getElementsByTagName("body")[0].appendChild(input)
+      globals.window["GAMEBOYADVANCE_STATE_INPUT"] = input
 
       input.addEventListener("change", function (event) {
         var file = event.target.files[0]
