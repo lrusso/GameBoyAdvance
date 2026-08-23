@@ -1205,6 +1205,19 @@ g=N;r(s);var pa=e([null,Aa,Xa,Ya,Wa,ab,Za,rb,sb,tb,ub,vb,wb,xb,yb,zb,Ab,Bb,Cb,Db
           }
         })
 
+        // the read itself failed (unreadable file, or an icloud file that
+        // never finished downloading). the load handler never runs, so
+        // release the input here instead of leaving it in the DOM until the
+        // next call. there is no ui to report the failure through.
+        reader.addEventListener("error", function () {
+          if (input.parentNode) {
+            input.parentNode.removeChild(input)
+          }
+          if (globals.window["GAMEBOYADVANCE_STATE_INPUT"] === input) {
+            globals.window["GAMEBOYADVANCE_STATE_INPUT"] = null
+          }
+        })
+
         reader.readAsArrayBuffer(file)
       })
 
