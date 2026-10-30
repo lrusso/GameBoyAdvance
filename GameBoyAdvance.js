@@ -644,7 +644,7 @@ function _typeof(A){return _typeof="function"==typeof Symbol&&"symbol"==typeof S
       }
 
       if (config.showMobileControls) {
-        function sendVirtualKey(keyState, keyValue) {
+        var sendVirtualKey = function (keyState, keyValue) {
           var oEvent = new KeyboardEvent(keyState, {
             bubbles: true,
             cancelable: false,
