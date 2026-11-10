@@ -19,7 +19,7 @@ A Game Boy Advance emulator with mobile compatibility designed for running in pu
 
 ## How to use it:
 
-Examples of loading local and online files can be found [here](https://github.com/lrusso/GameBoyAdvance/blob/main/GameBoyAdvance.htm#L137-L173) and [here](https://github.com/lrusso/GameBoyAdvance/blob/main/GameBoyAdvance.htm#L201-L232).
+Examples of loading local and online files can be found [here](https://github.com/lrusso/GameBoyAdvance/blob/main/GameBoyAdvance.htm#L162-L198) and [here](https://github.com/lrusso/GameBoyAdvance/blob/main/GameBoyAdvance.htm#L229-L260).
 
 ```js
 embedGameBoyAdvance({
